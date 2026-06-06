@@ -116,7 +116,7 @@
 
 <div class="opacity-panel">
   <label for="baseOpacity">底图透明度</label>
-  <input id="baseOpacity" type="range" min="0" max="100" value="45">
+  <input id="baseOpacity" type="range" min="0" max="100" value="30">
   <span id="baseOpacityValue">45%</span>
 </div>
 
@@ -125,7 +125,7 @@
 const map = L.map('map', { preferCanvas: true, zoomControl: true });
 const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
-  opacity: 0.45,
+  opacity: 0.30,
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
