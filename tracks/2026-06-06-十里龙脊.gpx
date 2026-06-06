@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:ns2="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" creator="ChatGPT GPX merger" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd"><metadata><name>西湖群山徒步 10</name></metadata><trk>
-    <name>西湖群山徒步 10</name>
+    <name>十里龙脊</name>
     <type>hiking</type>
     <trkseg>
       <trkpt lat="30.1739539" lon="120.0866101">
