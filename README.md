@@ -1,40 +1,33 @@
 # WestLake-hike
 
-目前仅供个人使用，不知道有什么别的用处。
-
 西湖群山 GPX 轨迹地图。
 
-## 如何新增轨迹
+## 使用方式
+
+网站读取 `tracks.geojson`，因此打开速度较快。
+
+## 以后如何新增轨迹
 
 1. 把新的 `.gpx` 文件上传到 `tracks/` 文件夹。
-2. 打开 `tracks.json`，在最后增加一条记录：
+2. 文件名建议用日期开头，例如：
 
-```json
-{
-  "id": 15,
-  "date": "2026-06-20",
-  "title": "北高峰—灵隐",
-  "file": "tracks/2026-06-20-北高峰-灵隐.gpx",
-  "visible": true
-}
+```text
+2026-06-20-北高峰-灵隐.gpx
 ```
 
-3. 保存后，GitHub Pages 会自动更新。
+3. 上传并 `Commit changes` 后，GitHub Actions 会自动运行，重新生成：
 
-## 如何隐藏某条轨迹
-
-把对应记录的：
-
-```json
-"visible": true
+```text
+tracks.geojson
+tracks.json
 ```
 
-改成：
+4. 等 1–3 分钟后刷新网站即可。
 
-```json
-"visible": false
-```
+## 如何查看自动任务是否成功
+
+进入仓库顶部的 `Actions`，点击最新的 `Build tracks GeoJSON`。如果是绿色对勾，说明成功。
 
 ## 隐私说明
 
-本包中的 GPX 已移除轨迹点精确时间，仅保留路线坐标和日期。
+自动脚本会删除 GPX 里的轨迹点精确时间，只保留路线坐标、文件日期和轨迹名称。

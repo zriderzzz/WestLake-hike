@@ -33,7 +33,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const map = L.map('map', { preferCanvas: true, zoomControl: true });
-
 const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   opacity: 0.45,
@@ -60,22 +59,6 @@ const routeGroups = [];
 let selectedTrack = null;
 let allBounds = [];
 
-function parseGpx(xmlText) {
-  const xml = new DOMParser().parseFromString(xmlText, "application/xml");
-  const segments = [];
-  const trksegs = Array.from(xml.getElementsByTagNameNS("*", "trkseg"));
-  trksegs.forEach(seg => {
-    const pts = Array.from(seg.getElementsByTagNameNS("*", "trkpt")).map(pt => {
-      const lat = Number(pt.getAttribute("lat"));
-      const lon = Number(pt.getAttribute("lon"));
-      if (Number.isFinite(lat) && Number.isFinite(lon)) return [lat, lon];
-      return null;
-    }).filter(Boolean);
-    if (pts.length) segments.push(pts);
-  });
-  return segments;
-}
-
 function setTrackVisibility(trackIndex) {
   selectedTrack = trackIndex;
   routeGroups.forEach((group, i) => {
@@ -95,26 +78,37 @@ function setTrackVisibility(trackIndex) {
 }
 
 async function loadTracks() {
-  const res = await fetch('tracks.json?ts=' + Date.now());
-  const manifest = await res.json();
-  const visibleTracks = manifest.filter(t => t.visible !== false);
+  const res = await fetch('tracks.geojson?ts=' + Date.now());
+  const geo = await res.json();
 
-  for (let i = 0; i < visibleTracks.length; i++) {
-    const trk = visibleTracks[i];
+  const byTrack = new Map();
+  for (const feature of geo.features) {
+    const p = feature.properties || {};
+    if (p.visible === false) continue;
+    if (!byTrack.has(p.id)) {
+      byTrack.set(p.id, { properties: p, features: [] });
+    }
+    byTrack.get(p.id).features.push(feature);
+  }
+
+  const tracks = Array.from(byTrack.values()).sort((a, b) => a.properties.id - b.properties.id);
+
+  tracks.forEach((trk, i) => {
     const color = colors[i % colors.length];
-    const gpxRes = await fetch(trk.file + '?ts=' + Date.now());
-    const gpxText = await gpxRes.text();
-    const segments = parseGpx(gpxText);
     const lines = [];
-    let pointCount = 0;
+    let totalPoints = 0;
 
-    segments.forEach(seg => {
-      pointCount += seg.length;
-      allBounds.push(...seg);
-      const line = L.polyline(seg, { color: color, weight: 3.5, opacity: 0.82, lineJoin: 'round', lineCap: 'round' }).addTo(map);
+    trk.features.forEach(feature => {
+      const latlngs = feature.geometry.coordinates.map(c => [c[1], c[0]]);
+      totalPoints += latlngs.length;
+      allBounds.push(...latlngs);
+
+      const line = L.polyline(latlngs, { color, weight: 3.5, opacity: 0.82, lineJoin: 'round', lineCap: 'round' }).addTo(map);
       line.on('click', () => setTrackVisibility(selectedTrack === i ? null : i));
-      const label = trk.date ? `${trk.date}｜${trk.title}` : trk.title;
-      line.bindPopup(`<b>轨迹 ${i + 1}</b><br/>${label}<br/>轨迹点：${pointCount || trk.points || ''}`);
+
+      const p = trk.properties;
+      const label = p.date ? `${p.date}｜${p.title}` : p.title;
+      line.bindPopup(`<b>轨迹 ${i + 1}</b><br/>${label}<br/>轨迹点：${totalPoints}`);
       lines.push(line);
     });
 
@@ -122,12 +116,12 @@ async function loadTracks() {
 
     const dot = document.createElement('button');
     dot.className = 'legend-dot';
-    dot.title = trk.date ? `${trk.date} ${trk.title}` : trk.title;
+    dot.title = trk.properties.date ? `${trk.properties.date} ${trk.properties.title}` : trk.properties.title;
     dot.style.background = color;
     dot.textContent = i + 1;
     dot.onclick = () => setTrackVisibility(selectedTrack === i ? null : i);
     legend.appendChild(dot);
-  }
+  });
 
   if (allBounds.length) map.fitBounds(allBounds, { padding: [25, 25] });
   else map.setView([30.24, 120.10], 13);
@@ -135,7 +129,7 @@ async function loadTracks() {
 
 loadTracks().catch(err => {
   console.error(err);
-  alert("轨迹加载失败，请检查 tracks.json 和 tracks/ 目录。");
+  alert("轨迹加载失败，请检查 tracks.geojson。");
 });
 </script>
 </body>
