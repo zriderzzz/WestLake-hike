@@ -33,17 +33,66 @@
     color: #2f4a32;
   }
 
-  .track-panel {
+  .stats-panel, .track-panel, .profile-panel, .opacity-panel {
     position: absolute;
     z-index: 1000;
-    bottom: 18px;
-    left: 14px;
-    width: 380px;
-    max-width: calc(100vw - 28px);
-    max-height: 56vh;
     background: rgba(255,255,255,.94);
+    border: 1px solid rgba(255,255,255,.72);
     border-radius: 12px;
     box-shadow: 0 2px 14px rgba(0,0,0,.16);
+  }
+
+  .stats-panel {
+    top: 18px;
+    right: 14px;
+    width: 278px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .stats-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+    color: #2f4a32;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 8px 9px;
+    border-radius: 8px;
+    background: rgba(245, 248, 239, 0.84);
+    border: 1px solid rgba(47, 74, 50, 0.10);
+    min-width: 0;
+  }
+
+  .stat-value {
+    font-size: 16px;
+    line-height: 1.1;
+    font-weight: 750;
+    color: #263e2a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-label {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(47, 74, 50, 0.70);
+  }
+
+  .track-panel {
+    bottom: 18px;
+    left: 14px;
+    width: 410px;
+    max-width: calc(100vw - 28px);
+    max-height: 58vh;
     font-size: 13px;
     overflow: hidden;
     display: flex;
@@ -137,7 +186,8 @@
   }
 
   .track-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 18px 16px 44px minmax(0, 1fr);
     align-items: center;
     gap: 7px;
     padding: 6px 8px 6px 28px;
@@ -151,8 +201,16 @@
   }
 
   .track-item.active {
-    background: rgba(0,0,0,.10);
+    background: rgba(47, 74, 50, 0.10);
     font-weight: 650;
+  }
+
+  .track-check {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #2f6b4a;
+    cursor: pointer;
   }
 
   .swatch {
@@ -180,15 +238,42 @@
     display: none;
   }
 
+  .profile-panel {
+    right: 14px;
+    bottom: 72px;
+    width: 380px;
+    max-width: calc(100vw - 28px);
+    padding: 12px;
+    box-sizing: border-box;
+    display: none;
+  }
+
+  .profile-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2f4a32;
+  }
+
+  .profile-meta {
+    margin-top: 3px;
+    font-size: 12px;
+    color: rgba(47, 74, 50, 0.74);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #elevationCanvas {
+    display: block;
+    width: 100%;
+    height: 150px;
+    margin-top: 9px;
+  }
+
   .opacity-panel {
-    position: absolute;
-    z-index: 1000;
     right: 14px;
     bottom: 18px;
-    background: rgba(255,255,255,.92);
     padding: 10px 12px;
-    border-radius: 12px;
-    box-shadow: 0 2px 14px rgba(0,0,0,.16);
     font-size: 12px;
     display: flex;
     align-items: center;
@@ -208,10 +293,44 @@
     text-align: right;
   }
 
+  @media (max-width: 900px) {
+    .stats-panel {
+      top: 70px;
+      left: 14px;
+      right: auto;
+      width: 292px;
+    }
+  }
+
   @media (max-width: 640px) {
+    .panel {
+      top: 12px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+    }
+
+    .stats-panel {
+      top: 62px;
+      left: 14px;
+      width: calc(100vw - 28px);
+    }
+
     .track-panel {
       width: calc(100vw - 28px);
       max-height: 48vh;
+    }
+
+    .profile-panel {
+      left: 14px;
+      right: 14px;
+      width: auto;
+      bottom: calc(48vh + 88px);
+    }
+
+    #elevationCanvas {
+      height: 120px;
     }
 
     .opacity-panel {
@@ -227,6 +346,28 @@
 
 <div class="panel">
   <div class="brand-title">West Lake Hiking Trails</div>
+</div>
+
+<div class="stats-panel">
+  <div class="stats-title">统计</div>
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-value" id="statsTracks">0/0</div>
+      <div class="stat-label">轨迹</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statsDistance">0 km</div>
+      <div class="stat-label">距离</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statsAscent">--</div>
+      <div class="stat-label">累计爬升</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statsLatest">--</div>
+      <div class="stat-label">最近</div>
+    </div>
+  </div>
 </div>
 
 <div class="track-panel">
@@ -245,6 +386,12 @@
   </div>
   <div class="tree" id="trackTree"></div>
   <div class="empty" id="emptyBox">没有匹配的轨迹。</div>
+</div>
+
+<div class="profile-panel" id="profilePanel">
+  <div class="profile-title" id="profileTitle">海拔剖面</div>
+  <div class="profile-meta" id="profileMeta"></div>
+  <canvas id="elevationCanvas"></canvas>
 </div>
 
 <div class="opacity-panel">
@@ -287,11 +434,18 @@ const searchInput = document.getElementById('searchInput');
 const selectedInfo = document.getElementById('selectedInfo');
 const selectedInfoTitle = document.getElementById('selectedInfoTitle');
 const selectedInfoMeta = document.getElementById('selectedInfoMeta');
+const statsTracks = document.getElementById('statsTracks');
+const statsDistance = document.getElementById('statsDistance');
+const statsAscent = document.getElementById('statsAscent');
+const statsLatest = document.getElementById('statsLatest');
+const profilePanel = document.getElementById('profilePanel');
+const profileTitle = document.getElementById('profileTitle');
+const profileMeta = document.getElementById('profileMeta');
+const elevationCanvas = document.getElementById('elevationCanvas');
 
 let trackGroups = [];
-let selectedIndex = null;
+let selectedIndexes = new Set();
 let allBounds = [];
-let recentMode = false;
 
 function yearOf(dateText) {
   return /^\d{4}-\d{2}-\d{2}/.test(dateText) ? dateText.slice(0, 4) : "未知年份";
@@ -299,6 +453,25 @@ function yearOf(dateText) {
 
 function monthOf(dateText) {
   return /^\d{4}-\d{2}-\d{2}/.test(dateText) ? dateText.slice(5, 7) + "月" : "未知月份";
+}
+
+function decodeText(value) {
+  const text = String(value || "").trim();
+  try {
+    return decodeURIComponent(text);
+  } catch (err) {
+    return text;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[ch]));
 }
 
 function labelOf(track) {
@@ -321,163 +494,276 @@ function haversineDistance(a, b) {
   return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
+function finiteNumber(value) {
+  return Number.isFinite(Number(value)) ? Number(value) : null;
+}
+
 function formatDistance(meters) {
-  if (!Number.isFinite(meters)) return "";
+  if (!Number.isFinite(meters)) return "--";
   if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
   return `${Math.round(meters)} m`;
 }
 
-function updateSelectedInfo(track) {
-  if (!track) {
+function formatMeters(meters) {
+  if (!Number.isFinite(meters)) return "--";
+  return `${Math.round(meters)} m`;
+}
+
+function selectedTracks() {
+  return trackGroups.filter(g => selectedIndexes.has(g.index));
+}
+
+function aggregateStats(tracks) {
+  return tracks.reduce((stats, track) => {
+    const p = track.properties;
+    stats.count += 1;
+    stats.distance += finiteNumber(p.distance) || 0;
+    stats.points += finiteNumber(p.points) || 0;
+
+    if (p.hasElevation) {
+      stats.hasElevation = true;
+      stats.ascent += finiteNumber(p.ascent) || 0;
+      stats.descent += finiteNumber(p.descent) || 0;
+    }
+
+    if (p.date && p.date > stats.latest) {
+      stats.latest = p.date;
+    }
+
+    return stats;
+  }, { count: 0, distance: 0, ascent: 0, descent: 0, points: 0, latest: "", hasElevation: false });
+}
+
+function boundsForTracks(tracks) {
+  const bounds = [];
+  tracks.forEach(track => {
+    track.lines.forEach(line => {
+      bounds.push(...line.getLatLngs());
+    });
+  });
+  return bounds;
+}
+
+function fitSelectedTracks() {
+  const tracks = selectedTracks();
+  const bounds = boundsForTracks(tracks);
+
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+}
+
+function updateStatsPanel() {
+  const stats = aggregateStats(selectedTracks());
+  statsTracks.textContent = `${stats.count}/${trackGroups.length}`;
+  statsDistance.textContent = formatDistance(stats.distance);
+  statsAscent.textContent = stats.hasElevation ? formatMeters(stats.ascent) : "--";
+  statsLatest.textContent = stats.latest ? stats.latest.slice(5) : "--";
+}
+
+function updateSelectedInfo() {
+  const tracks = selectedTracks();
+
+  if (!tracks.length) {
     selectedInfo.style.display = "none";
     selectedInfoTitle.textContent = "";
     selectedInfoMeta.textContent = "";
     return;
   }
 
-  const p = track.properties;
-  const name = p.date ? `${p.date}｜${p.title}` : p.title;
-  selectedInfoTitle.textContent = name || "未命名轨迹";
-  selectedInfoMeta.textContent = `距离：${formatDistance(p.distance)}　轨迹点：${p.points}`;
+  const stats = aggregateStats(tracks);
   selectedInfo.style.display = "block";
+
+  if (tracks.length === 1) {
+    const p = tracks[0].properties;
+    const name = p.date ? `${p.date}｜${p.title}` : p.title;
+    const elevation = p.hasElevation ? `　爬升：${formatMeters(p.ascent)}　下降：${formatMeters(p.descent)}` : "";
+
+    selectedInfoTitle.textContent = name || "未命名轨迹";
+    selectedInfoMeta.textContent = `距离：${formatDistance(p.distance)}　轨迹点：${p.points}${elevation}`;
+    return;
+  }
+
+  selectedInfoTitle.textContent = `已选择 ${tracks.length} 条轨迹`;
+  selectedInfoMeta.textContent = `距离：${formatDistance(stats.distance)}　轨迹点：${Math.round(stats.points)}${stats.hasElevation ? `　累计爬升：${formatMeters(stats.ascent)}` : ""}`;
 }
 
-function setVisibilityMode(mode, index = null) {
-  selectedIndex = index;
+function drawElevationProfile(track) {
+  if (!track || track.profile.length < 2) {
+    profilePanel.style.display = "none";
+    return;
+  }
 
-  trackGroups.forEach((group, i) => {
-    const isSelected = selectedIndex === i;
+  profilePanel.style.display = "block";
+  const p = track.properties;
+  profileTitle.textContent = p.title || "海拔剖面";
+  profileMeta.textContent = `${p.date || ""}　${formatDistance(p.distance)}　爬升 ${formatMeters(p.ascent)}`.trim();
+
+  const rect = elevationCanvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(280, rect.width);
+  const height = Math.max(110, rect.height);
+  elevationCanvas.width = Math.round(width * dpr);
+  elevationCanvas.height = Math.round(height * dpr);
+
+  const ctx = elevationCanvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+  const pad = { left: 38, right: 12, top: 14, bottom: 26 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+  const elevations = track.profile.map(point => point.elevation);
+  const distances = track.profile.map(point => point.distance);
+  const minEle = Math.min(...elevations);
+  const maxEle = Math.max(...elevations);
+  const maxDist = Math.max(...distances);
+  const eleSpan = Math.max(1, maxEle - minEle);
+
+  const x = distance => pad.left + (maxDist ? distance / maxDist : 0) * plotW;
+  const y = elevation => pad.top + (1 - (elevation - minEle) / eleSpan) * plotH;
+
+  ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(47, 74, 50, 0.12)";
+  ctx.fillStyle = "rgba(47, 74, 50, 0.62)";
+
+  for (let i = 0; i <= 3; i++) {
+    const yy = pad.top + (plotH * i / 3);
+    const ele = maxEle - eleSpan * i / 3;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, yy);
+    ctx.lineTo(width - pad.right, yy);
+    ctx.stroke();
+    ctx.fillText(`${Math.round(ele)}m`, 2, yy + 4);
+  }
+
+  const gradient = ctx.createLinearGradient(0, pad.top, 0, height - pad.bottom);
+  gradient.addColorStop(0, `${track.color}66`);
+  gradient.addColorStop(1, `${track.color}08`);
+
+  ctx.beginPath();
+  track.profile.forEach((point, i) => {
+    const px = x(point.distance);
+    const py = y(point.elevation);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  });
+  ctx.lineTo(x(maxDist), height - pad.bottom);
+  ctx.lineTo(x(0), height - pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  ctx.beginPath();
+  track.profile.forEach((point, i) => {
+    const px = x(point.distance);
+    const py = y(point.elevation);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  });
+  ctx.strokeStyle = track.color;
+  ctx.lineWidth = 2.2;
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(47, 74, 50, 0.74)";
+  ctx.fillText("0", pad.left, height - 8);
+  ctx.textAlign = "right";
+  ctx.fillText(formatDistance(maxDist), width - pad.right, height - 8);
+  ctx.textAlign = "left";
+}
+
+function updateProfile() {
+  const tracks = selectedTracks();
+
+  if (tracks.length !== 1 || tracks[0].profile.length < 2) {
+    profilePanel.style.display = "none";
+    return;
+  }
+
+  drawElevationProfile(tracks[0]);
+}
+
+function updatePanels() {
+  updateStatsPanel();
+  updateSelectedInfo();
+  updateProfile();
+}
+
+function syncVisibleTracks() {
+  trackGroups.forEach(group => {
+    const selected = selectedIndexes.has(group.index);
+    const single = selectedIndexes.size === 1;
 
     group.lines.forEach(line => {
-      if (mode === "clear") {
-        if (map.hasLayer(line)) map.removeLayer(line);
-        return;
-      }
-
-      if (!map.hasLayer(line)) line.addTo(map);
-
-      if (selectedIndex === null) {
+      if (selected) {
+        if (!map.hasLayer(line)) line.addTo(map);
         line.setStyle({
-          weight: 3.5,
-          opacity: group.temporarilyHidden ? 0 : 0.82
+          weight: single ? 5.5 : 3.5,
+          opacity: single ? 1 : 0.82
         });
-      } else {
-        line.setStyle({
-          weight: isSelected ? 6 : 2.5,
-          opacity: isSelected ? 1 : 0.16
-        });
-
-        if (isSelected) {
-          line.bringToFront();
-        }
+        if (single) line.bringToFront();
+      } else if (map.hasLayer(line)) {
+        map.removeLayer(line);
       }
     });
   });
 
-  document.querySelectorAll('.track-item').forEach((el, i) => {
-    el.classList.toggle('active', selectedIndex === i);
+  document.querySelectorAll('.track-item').forEach(el => {
+    const index = Number(el.dataset.index);
+    el.classList.toggle('active', selectedIndexes.has(index));
   });
 
-  updateSelectedInfo(selectedIndex === null ? null : trackGroups[selectedIndex]);
+  document.querySelectorAll('.track-check').forEach(el => {
+    const index = Number(el.dataset.index);
+    el.checked = selectedIndexes.has(index);
+  });
 }
 
-function selectTrack(index) {
-  if (selectedIndex === index) {
-    selectedIndex = null;
-    setVisibilityMode("all");
-  } else {
-    setVisibilityMode("select", index);
+function applySelection(indexes, options = {}) {
+  const { fit = true } = options;
+  selectedIndexes = new Set(indexes);
+  syncVisibleTracks();
+  renderTree();
+  updatePanels();
 
-    const bounds = [];
-    trackGroups[index].lines.forEach(line => {
-      bounds.push(...line.getLatLngs());
-    });
-
-    if (bounds.length) {
-      map.fitBounds(bounds, { padding: [30, 30] });
-    }
+  if (fit) {
+    fitSelectedTracks();
   }
+}
+
+function toggleTrack(index) {
+  const next = new Set(selectedIndexes);
+  if (next.has(index)) next.delete(index);
+  else next.add(index);
+  applySelection(next);
+}
+
+function focusTrack(index) {
+  applySelection([index]);
 }
 
 function showAll() {
-  recentMode = false;
-  selectedIndex = null;
-
-  trackGroups.forEach(g => {
-    g.temporarilyHidden = false;
-  });
-
-  setVisibilityMode("all");
-  renderTree();
-
-  if (allBounds.length) {
-    map.fitBounds(allBounds, { padding: [25, 25] });
-  }
+  applySelection(trackGroups.map(g => g.index));
 }
 
 function showRecent(limit = 10) {
-  recentMode = true;
-  selectedIndex = null;
-
-  const sorted = [...trackGroups].sort((a, b) => {
-    const da = a.properties.date || "";
-    const db = b.properties.date || "";
-    return db.localeCompare(da);
-  });
-
-  const keep = new Set(sorted.slice(0, limit).map(g => g.index));
-
-  trackGroups.forEach(g => {
-    g.temporarilyHidden = !keep.has(g.index);
-
-    g.lines.forEach(line => {
-      if (g.temporarilyHidden) {
-        if (map.hasLayer(line)) map.removeLayer(line);
-      } else {
-        if (!map.hasLayer(line)) line.addTo(map);
-        line.setStyle({ weight: 3.5, opacity: 0.82 });
-      }
-    });
-  });
-
-  updateSelectedInfo(null);
-  renderTree();
-
-  const bounds = [];
-  trackGroups.filter(g => !g.temporarilyHidden).forEach(g => {
-    g.lines.forEach(line => {
-      bounds.push(...line.getLatLngs());
-    });
-  });
-
-  if (bounds.length) {
-    map.fitBounds(bounds, { padding: [25, 25] });
-  }
+  const recent = [...trackGroups]
+    .sort((a, b) => (b.properties.date || "").localeCompare(a.properties.date || ""))
+    .slice(0, limit)
+    .map(g => g.index);
+  applySelection(recent);
 }
 
 function clearSelection() {
-  selectedIndex = null;
-
-  trackGroups.forEach(g => {
-    g.temporarilyHidden = false;
-  });
-
-  setVisibilityMode("all");
-
-  document.querySelectorAll('.track-item').forEach(el => {
-    el.classList.remove('active');
-  });
+  applySelection([]);
 }
 
 function renderTree() {
   const query = searchInput.value.trim().toLowerCase();
   trackTree.innerHTML = "";
 
-  let tracks = trackGroups.filter(g => !g.temporarilyHidden || !recentMode);
-
-  if (recentMode) {
-    tracks = trackGroups.filter(g => !g.temporarilyHidden);
-  }
+  let tracks = [...trackGroups];
 
   if (query) {
     tracks = tracks.filter(g => labelOf(g).toLowerCase().includes(query));
@@ -495,14 +781,8 @@ function renderTree() {
     const y = yearOf(g.properties.date);
     const m = monthOf(g.properties.date);
 
-    if (!grouped.has(y)) {
-      grouped.set(y, new Map());
-    }
-
-    if (!grouped.get(y).has(m)) {
-      grouped.get(y).set(m, []);
-    }
-
+    if (!grouped.has(y)) grouped.set(y, new Map());
+    if (!grouped.get(y).has(m)) grouped.get(y).set(m, []);
     grouped.get(y).get(m).push(g);
   });
 
@@ -542,12 +822,17 @@ function renderTree() {
 
         const item = document.createElement("div");
         item.className = "track-item";
-
-        if (selectedIndex === g.index) {
-          item.classList.add("active");
-        }
-
+        item.dataset.index = g.index;
+        item.classList.toggle("active", selectedIndexes.has(g.index));
         item.title = `${labelOf(g)}｜${formatDistance(p.distance)}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "track-check";
+        checkbox.dataset.index = g.index;
+        checkbox.checked = selectedIndexes.has(g.index);
+        checkbox.onclick = event => event.stopPropagation();
+        checkbox.onchange = () => toggleTrack(g.index);
 
         const swatch = document.createElement("span");
         swatch.className = "swatch";
@@ -561,11 +846,12 @@ function renderTree() {
         title.className = "track-title";
         title.textContent = p.title || "未命名轨迹";
 
+        item.appendChild(checkbox);
         item.appendChild(swatch);
         item.appendChild(date);
         item.appendChild(title);
 
-        item.onclick = () => selectTrack(g.index);
+        item.onclick = () => toggleTrack(g.index);
 
         monthDetails.appendChild(item);
       });
@@ -589,7 +875,13 @@ async function loadTracks() {
     if (p.visible === false) continue;
 
     if (!byTrack.has(p.id)) {
-      byTrack.set(p.id, { properties: p, features: [] });
+      byTrack.set(p.id, {
+        properties: {
+          ...p,
+          title: decodeText(p.title)
+        },
+        features: []
+      });
     }
 
     byTrack.get(p.id).features.push(feature);
@@ -604,16 +896,55 @@ async function loadTracks() {
   tracks.forEach((trk, i) => {
     const color = colors[i % colors.length];
     const lines = [];
+    const profile = [];
     let totalPoints = 0;
     let totalDistance = 0;
+    let totalAscent = 0;
+    let totalDescent = 0;
+    let minElevation = null;
+    let maxElevation = null;
+    let hasElevation = false;
+    let profileDistance = 0;
 
     trk.features.forEach(feature => {
-      const latlngs = feature.geometry.coordinates.map(c => [c[1], c[0]]);
+      const coords = feature.geometry.coordinates || [];
+      const latlngs = coords.map(c => [c[1], c[0]]);
       totalPoints += latlngs.length;
 
-      for (let j = 1; j < latlngs.length; j++) {
-        totalDistance += haversineDistance(latlngs[j - 1], latlngs[j]);
+      const featureDistance = finiteNumber(feature.properties?.distance);
+      totalDistance += featureDistance || 0;
+
+      if (!featureDistance) {
+        for (let j = 1; j < latlngs.length; j++) {
+          totalDistance += haversineDistance(latlngs[j - 1], latlngs[j]);
+        }
       }
+
+      totalAscent += finiteNumber(feature.properties?.ascent) || 0;
+      totalDescent += finiteNumber(feature.properties?.descent) || 0;
+
+      const featureMin = finiteNumber(feature.properties?.min_elevation);
+      const featureMax = finiteNumber(feature.properties?.max_elevation);
+      if (featureMin !== null && featureMax !== null) {
+        hasElevation = true;
+        minElevation = minElevation === null ? featureMin : Math.min(minElevation, featureMin);
+        maxElevation = maxElevation === null ? featureMax : Math.max(maxElevation, featureMax);
+      }
+
+      let lastLatLng = null;
+      coords.forEach(c => {
+        const latlng = [c[1], c[0]];
+        if (lastLatLng) {
+          profileDistance += haversineDistance(lastLatLng, latlng);
+        }
+
+        const elevation = finiteNumber(c[2]);
+        if (elevation !== null) {
+          profile.push({ distance: profileDistance, elevation });
+        }
+
+        lastLatLng = latlng;
+      });
 
       allBounds.push(...latlngs);
 
@@ -623,33 +954,53 @@ async function loadTracks() {
         opacity: 0.82,
         lineJoin: 'round',
         lineCap: 'round'
-      }).addTo(map);
+      });
 
-      line.on('click', () => selectTrack(i));
+      line.on('click', () => focusTrack(i));
       lines.push(line);
     });
 
     const p = trk.properties;
-    const label = p.date ? `${p.date}｜${p.title}` : p.title;
+    const title = p.title || "未命名轨迹";
+    const label = p.date ? `${p.date}｜${title}` : title;
+    const popup = [
+      `<b>${escapeHtml(label)}</b>`,
+      `距离：${formatDistance(totalDistance)}`,
+      `轨迹点：${totalPoints}`
+    ];
+
+    if (hasElevation) {
+      popup.push(`爬升：${formatMeters(totalAscent)}`);
+      popup.push(`下降：${formatMeters(totalDescent)}`);
+    }
 
     lines.forEach(line => {
-      line.bindPopup(`<b>${label}</b><br/>距离：${formatDistance(totalDistance)}<br/>轨迹点：${totalPoints}`);
+      line.bindPopup(popup.join('<br/>'));
     });
 
     trackGroups.push({
       index: i,
       color,
       lines,
+      profile,
       properties: {
         ...p,
+        title,
         points: totalPoints,
-        distance: totalDistance
-      },
-      temporarilyHidden: false
+        distance: totalDistance,
+        ascent: totalAscent,
+        descent: totalDescent,
+        minElevation,
+        maxElevation,
+        hasElevation
+      }
     });
   });
 
+  selectedIndexes = new Set(trackGroups.map(g => g.index));
   renderTree();
+  syncVisibleTracks();
+  updatePanels();
 
   if (allBounds.length) {
     map.fitBounds(allBounds, { padding: [25, 25] });
@@ -662,6 +1013,7 @@ document.getElementById("showAllBtn").onclick = showAll;
 document.getElementById("recentBtn").onclick = () => showRecent(10);
 document.getElementById("clearBtn").onclick = clearSelection;
 searchInput.addEventListener("input", renderTree);
+window.addEventListener('resize', updateProfile);
 
 loadTracks().catch(err => {
   console.error(err);
