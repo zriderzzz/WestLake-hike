@@ -34,25 +34,59 @@
   }
 
   .track-panel {
-    position: absolute; z-index: 1000; bottom: 18px; left: 14px;
-    width: 380px; max-width: calc(100vw - 28px); max-height: 56vh;
-    background: rgba(255,255,255,.94); border-radius: 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 18px;
+    left: 14px;
+    width: 380px;
+    max-width: calc(100vw - 28px);
+    max-height: 56vh;
+    background: rgba(255,255,255,.94);
+    border-radius: 12px;
     box-shadow: 0 2px 14px rgba(0,0,0,.16);
-    font-size: 13px; overflow: hidden; display: flex; flex-direction: column;
+    font-size: 13px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
+
   .track-panel-header {
-    padding: 10px 12px 8px; border-bottom: 1px solid rgba(0,0,0,.08);
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid rgba(0,0,0,.08);
   }
-  .track-panel-title { font-weight: 700; margin-bottom: 8px; }
-  .toolbar { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+
+  .track-panel-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
   .toolbar button {
-    border: 1px solid rgba(0,0,0,.16); background: #fff; border-radius: 8px;
-    padding: 5px 8px; font-size: 12px; cursor: pointer;
+    border: 1px solid rgba(0,0,0,.16);
+    background: #fff;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
   }
-  .toolbar button:hover { background: #f4f4f4; }
+
+  .toolbar button:hover {
+    background: #f4f4f4;
+  }
+
   .search {
-    width: 100%; box-sizing: border-box; border: 1px solid rgba(0,0,0,.16);
-    border-radius: 8px; padding: 7px 9px; font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(0,0,0,.16);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-size: 13px;
   }
 
   .selected-info {
@@ -65,55 +99,129 @@
     color: #2f4a32;
     line-height: 1.45;
   }
+
   .selected-info-title {
     font-weight: 700;
     margin-bottom: 2px;
   }
+
   .selected-info-meta {
     font-size: 12px;
     color: rgba(47, 74, 50, 0.78);
   }
 
   .tree {
-    overflow: auto; padding: 8px 8px 10px;
+    overflow: auto;
+    padding: 8px 8px 10px;
   }
-  details { margin: 2px 0; }
+
+  details {
+    margin: 2px 0;
+  }
+
   summary {
-    cursor: pointer; user-select: none; padding: 5px 6px; border-radius: 7px;
+    cursor: pointer;
+    user-select: none;
+    padding: 5px 6px;
+    border-radius: 7px;
     font-weight: 650;
   }
-  summary:hover { background: rgba(0,0,0,.05); }
-  .month summary { font-weight: 600; margin-left: 10px; }
+
+  summary:hover {
+    background: rgba(0,0,0,.05);
+  }
+
+  .month summary {
+    font-weight: 600;
+    margin-left: 10px;
+  }
+
   .track-item {
-    display: flex; align-items: center; gap: 7px;
-    padding: 6px 8px 6px 28px; border-radius: 8px; cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px 6px 28px;
+    border-radius: 8px;
+    cursor: pointer;
     line-height: 1.25;
   }
-  .track-item:hover { background: rgba(0,0,0,.06); }
-  .track-item.active { background: rgba(0,0,0,.10); font-weight: 650; }
-  .swatch {
-    width: 16px; height: 4px; border-radius: 3px; flex: 0 0 auto;
+
+  .track-item:hover {
+    background: rgba(0,0,0,.06);
   }
-  .track-date { font-variant-numeric: tabular-nums; color: #444; white-space: nowrap; }
-  .track-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .empty { color: #666; padding: 10px; display: none; }
+
+  .track-item.active {
+    background: rgba(0,0,0,.10);
+    font-weight: 650;
+  }
+
+  .swatch {
+    width: 16px;
+    height: 4px;
+    border-radius: 3px;
+    flex: 0 0 auto;
+  }
+
+  .track-date {
+    font-variant-numeric: tabular-nums;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  .track-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .empty {
+    color: #666;
+    padding: 10px;
+    display: none;
+  }
 
   .opacity-panel {
-    position: absolute; z-index: 1000; right: 14px; bottom: 18px;
-    background: rgba(255,255,255,.92); padding: 10px 12px; border-radius: 12px;
-    box-shadow: 0 2px 14px rgba(0,0,0,.16); font-size: 12px;
-    display: flex; align-items: center; gap: 8px;
+    position: absolute;
+    z-index: 1000;
+    right: 14px;
+    bottom: 18px;
+    background: rgba(255,255,255,.92);
+    padding: 10px 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 14px rgba(0,0,0,.16);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  .opacity-panel input { width: 140px; }
-  .opacity-panel label { font-weight: 600; }
-  .opacity-panel span { min-width: 36px; text-align: right; }
+
+  .opacity-panel input {
+    width: 140px;
+  }
+
+  .opacity-panel label {
+    font-weight: 600;
+  }
+
+  .opacity-panel span {
+    min-width: 36px;
+    text-align: right;
+  }
 
   @media (max-width: 640px) {
-    .track-panel { width: calc(100vw - 28px); max-height: 48vh; }
-    .opacity-panel { right: 14px; bottom: calc(48vh + 34px); }
+    .track-panel {
+      width: calc(100vw - 28px);
+      max-height: 48vh;
+    }
+
+    .opacity-panel {
+      right: 14px;
+      bottom: calc(48vh + 34px);
+    }
   }
 </style>
 </head>
+
 <body>
 <div id="map"></div>
 
@@ -148,6 +256,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const map = L.map('map', { preferCanvas: true, zoomControl: true });
+
 const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   opacity: 0.30,
@@ -158,12 +267,12 @@ const baseOpacity = document.getElementById('baseOpacity');
 const baseOpacityValue = document.getElementById('baseOpacityValue');
 
 baseLayer.setOpacity(Number(baseOpacity.value) / 100);
-baseOpacityValue.textContent = ${baseOpacity.value}%;
+baseOpacityValue.textContent = `${baseOpacity.value}%`;
 
 baseOpacity.addEventListener('input', () => {
   const value = Number(baseOpacity.value) / 100;
   baseLayer.setOpacity(value);
-  baseOpacityValue.textContent = ${baseOpacity.value}%;
+  baseOpacityValue.textContent = `${baseOpacity.value}%`;
 });
 
 const colors = [
@@ -184,11 +293,6 @@ let selectedIndex = null;
 let allBounds = [];
 let recentMode = false;
 
-function normalizeDate(dateText) {
-  if (!dateText) return "未知日期";
-  return dateText;
-}
-
 function yearOf(dateText) {
   return /^\d{4}-\d{2}-\d{2}/.test(dateText) ? dateText.slice(0, 4) : "未知年份";
 }
@@ -199,7 +303,7 @@ function monthOf(dateText) {
 
 function labelOf(track) {
   const p = track.properties;
-  return ${p.date || ""} ${p.title || ""}.trim();
+  return `${p.date || ""} ${p.title || ""}`.trim();
 }
 
 function haversineDistance(a, b) {
@@ -219,8 +323,8 @@ function haversineDistance(a, b) {
 
 function formatDistance(meters) {
   if (!Number.isFinite(meters)) return "";
-  if (meters >= 1000) return ${(meters / 1000).toFixed(2)} km;
-  return ${Math.round(meters)} m;
+  if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
+  return `${Math.round(meters)} m`;
 }
 
 function updateSelectedInfo(track) {
@@ -232,9 +336,9 @@ function updateSelectedInfo(track) {
   }
 
   const p = track.properties;
-  const name = p.date ? ${p.date}｜${p.title} : p.title;
+  const name = p.date ? `${p.date}｜${p.title}` : p.title;
   selectedInfoTitle.textContent = name || "未命名轨迹";
-  selectedInfoMeta.textContent = 距离：${formatDistance(p.distance)}　轨迹点：${p.points};
+  selectedInfoMeta.textContent = `距离：${formatDistance(p.distance)}　轨迹点：${p.points}`;
   selectedInfo.style.display = "block";
 }
 
@@ -253,13 +357,19 @@ function setVisibilityMode(mode, index = null) {
       if (!map.hasLayer(line)) line.addTo(map);
 
       if (selectedIndex === null) {
-        line.setStyle({ weight: 3.5, opacity: group.temporarilyHidden ? 0 : 0.82 });
+        line.setStyle({
+          weight: 3.5,
+          opacity: group.temporarilyHidden ? 0 : 0.82
+        });
       } else {
         line.setStyle({
           weight: isSelected ? 6 : 2.5,
           opacity: isSelected ? 1 : 0.16
         });
-        if (isSelected) line.bringToFront();
+
+        if (isSelected) {
+          line.bringToFront();
+        }
       }
     });
   });
@@ -277,19 +387,32 @@ function selectTrack(index) {
     setVisibilityMode("all");
   } else {
     setVisibilityMode("select", index);
+
     const bounds = [];
-    trackGroups[index].lines.forEach(line => bounds.push(...line.getLatLngs()));
-    if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+    trackGroups[index].lines.forEach(line => {
+      bounds.push(...line.getLatLngs());
+    });
+
+    if (bounds.length) {
+      map.fitBounds(bounds, { padding: [30, 30] });
+    }
   }
 }
 
 function showAll() {
   recentMode = false;
   selectedIndex = null;
-  trackGroups.forEach(g => g.temporarilyHidden = false);
+
+  trackGroups.forEach(g => {
+    g.temporarilyHidden = false;
+  });
+
   setVisibilityMode("all");
   renderTree();
-  if (allBounds.length) map.fitBounds(allBounds, { padding: [25, 25] });
+
+  if (allBounds.length) {
+    map.fitBounds(allBounds, { padding: [25, 25] });
+  }
 }
 
 function showRecent(limit = 10) {
@@ -301,10 +424,12 @@ function showRecent(limit = 10) {
     const db = b.properties.date || "";
     return db.localeCompare(da);
   });
+
   const keep = new Set(sorted.slice(0, limit).map(g => g.index));
 
-  trackGroups.forEach((g) => {
+  trackGroups.forEach(g => {
     g.temporarilyHidden = !keep.has(g.index);
+
     g.lines.forEach(line => {
       if (g.temporarilyHidden) {
         if (map.hasLayer(line)) map.removeLayer(line);
@@ -320,16 +445,28 @@ function showRecent(limit = 10) {
 
   const bounds = [];
   trackGroups.filter(g => !g.temporarilyHidden).forEach(g => {
-    g.lines.forEach(line => bounds.push(...line.getLatLngs()));
+    g.lines.forEach(line => {
+      bounds.push(...line.getLatLngs());
+    });
   });
-  if (bounds.length) map.fitBounds(bounds, { padding: [25, 25] });
+
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [25, 25] });
+  }
 }
 
 function clearSelection() {
   selectedIndex = null;
-  trackGroups.forEach(g => g.temporarilyHidden = false);
+
+  trackGroups.forEach(g => {
+    g.temporarilyHidden = false;
+  });
+
   setVisibilityMode("all");
-  document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
+
+  document.querySelectorAll('.track-item').forEach(el => {
+    el.classList.remove('active');
+  });
 }
 
 function renderTree() {
@@ -337,7 +474,10 @@ function renderTree() {
   trackTree.innerHTML = "";
 
   let tracks = trackGroups.filter(g => !g.temporarilyHidden || !recentMode);
-  if (recentMode) tracks = trackGroups.filter(g => !g.temporarilyHidden);
+
+  if (recentMode) {
+    tracks = trackGroups.filter(g => !g.temporarilyHidden);
+  }
 
   if (query) {
     tracks = tracks.filter(g => labelOf(g).toLowerCase().includes(query));
@@ -350,11 +490,19 @@ function renderTree() {
   });
 
   const grouped = new Map();
+
   tracks.forEach(g => {
     const y = yearOf(g.properties.date);
     const m = monthOf(g.properties.date);
-    if (!grouped.has(y)) grouped.set(y, new Map());
-    if (!grouped.get(y).has(m)) grouped.get(y).set(m, []);
+
+    if (!grouped.has(y)) {
+      grouped.set(y, new Map());
+    }
+
+    if (!grouped.get(y).has(m)) {
+      grouped.get(y).set(m, []);
+    }
+
     grouped.get(y).get(m).push(g);
   });
 
@@ -363,6 +511,7 @@ function renderTree() {
 
   const latestYear = years[0];
   let latestMonth = null;
+
   if (latestYear) {
     latestMonth = Array.from(grouped.get(latestYear).keys()).sort((a, b) => b.localeCompare(a))[0];
   }
@@ -374,25 +523,31 @@ function renderTree() {
 
     const yearSummary = document.createElement("summary");
     const count = Array.from(grouped.get(year).values()).reduce((sum, arr) => sum + arr.length, 0);
-    yearSummary.textContent = ${year}（${count}）;
+    yearSummary.textContent = `${year}（${count}）`;
     yearDetails.appendChild(yearSummary);
 
     const months = Array.from(grouped.get(year).keys()).sort((a, b) => b.localeCompare(a));
+
     months.forEach(month => {
       const monthDetails = document.createElement("details");
       monthDetails.open = query || (year === latestYear && month === latestMonth);
       monthDetails.className = "month";
 
       const monthSummary = document.createElement("summary");
-      monthSummary.textContent = ${month}（${grouped.get(year).get(month).length}）;
+      monthSummary.textContent = `${month}（${grouped.get(year).get(month).length}）`;
       monthDetails.appendChild(monthSummary);
 
       grouped.get(year).get(month).forEach(g => {
         const p = g.properties;
+
         const item = document.createElement("div");
         item.className = "track-item";
-        if (selectedIndex === g.index) item.classList.add("active");
-        item.title = ${labelOf(g)}｜${formatDistance(p.distance)};
+
+        if (selectedIndex === g.index) {
+          item.classList.add("active");
+        }
+
+        item.title = `${labelOf(g)}｜${formatDistance(p.distance)}`;
 
         const swatch = document.createElement("span");
         swatch.className = "swatch";
@@ -409,6 +564,7 @@ function renderTree() {
         item.appendChild(swatch);
         item.appendChild(date);
         item.appendChild(title);
+
         item.onclick = () => selectTrack(g.index);
 
         monthDetails.appendChild(item);
@@ -426,12 +582,16 @@ async function loadTracks() {
   const geo = await res.json();
 
   const byTrack = new Map();
+
   for (const feature of geo.features) {
     const p = feature.properties || {};
+
     if (p.visible === false) continue;
+
     if (!byTrack.has(p.id)) {
       byTrack.set(p.id, { properties: p, features: [] });
     }
+
     byTrack.get(p.id).features.push(feature);
   }
 
@@ -470,9 +630,10 @@ async function loadTracks() {
     });
 
     const p = trk.properties;
-    const label = p.date ? ${p.date}｜${p.title} : p.title;
+    const label = p.date ? `${p.date}｜${p.title}` : p.title;
+
     lines.forEach(line => {
-      line.bindPopup(<b>${label}</b><br/>距离：${formatDistance(totalDistance)}<br/>轨迹点：${totalPoints});
+      line.bindPopup(`<b>${label}</b><br/>距离：${formatDistance(totalDistance)}<br/>轨迹点：${totalPoints}`);
     });
 
     trackGroups.push({
