@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TRACKS_DIR = ROOT / "tracks"
 GEOJSON_PATH = ROOT / "tracks.geojson"
 JSON_PATH = ROOT / "tracks.json"
-ELEVATION_GAIN_THRESHOLD = 2.0
+ELEVATION_GAIN_THRESHOLD = 0.0
 
 
 def ns_uri(root):
@@ -166,10 +166,10 @@ def main():
 
                     if elevation is not None and last_elevation is not None:
                         delta = elevation - last_elevation
-                        if delta >= ELEVATION_GAIN_THRESHOLD:
+                        if delta > ELEVATION_GAIN_THRESHOLD:
                             segment_stats["ascent"] += delta
                             track_stats["ascent"] += delta
-                        elif delta <= -ELEVATION_GAIN_THRESHOLD:
+                        elif delta < -ELEVATION_GAIN_THRESHOLD:
                             segment_stats["descent"] += abs(delta)
                             track_stats["descent"] += abs(delta)
 
