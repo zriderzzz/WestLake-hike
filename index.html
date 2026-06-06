@@ -707,6 +707,11 @@ function syncVisibleTracks() {
         map.removeLayer(line);
       }
     });
+
+    group.hitLines.forEach(hitLine => {
+      if (!map.hasLayer(hitLine)) hitLine.addTo(map);
+      hitLine.bringToFront();
+    });
   });
 
   document.querySelectorAll('.track-item').forEach(el => {
@@ -896,6 +901,7 @@ async function loadTracks() {
   tracks.forEach((trk, i) => {
     const color = colors[i % colors.length];
     const lines = [];
+    const hitLines = [];
     const profile = [];
     let totalPoints = 0;
     let totalDistance = 0;
@@ -958,6 +964,27 @@ async function loadTracks() {
 
       line.on('click', () => focusTrack(i));
       lines.push(line);
+
+      const hitLine = L.polyline(latlngs, {
+        color,
+        weight: 18,
+        opacity: 0,
+        lineJoin: 'round',
+        lineCap: 'round',
+        bubblingMouseEvents: false
+      }).addTo(map);
+
+      hitLine.on('click', event => {
+        L.DomEvent.stop(event);
+        focusTrack(i);
+      });
+      hitLine.on('mouseover', () => {
+        map.getContainer().style.cursor = 'pointer';
+      });
+      hitLine.on('mouseout', () => {
+        map.getContainer().style.cursor = '';
+      });
+      hitLines.push(hitLine);
     });
 
     const p = trk.properties;
@@ -982,6 +1009,7 @@ async function loadTracks() {
       index: i,
       color,
       lines,
+      hitLines,
       profile,
       properties: {
         ...p,
