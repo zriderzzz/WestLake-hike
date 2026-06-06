@@ -20,4 +20,3 @@ tracks.json
 
 4. 等 1–3 分钟后刷新网站即可。
 
-<!-- codex-write-test: temporary line, will be reverted -->
