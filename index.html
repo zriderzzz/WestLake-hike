@@ -109,6 +109,10 @@
     margin-bottom: 8px;
   }
 
+  .drawer-toggle {
+    display: none;
+  }
+
   .toolbar {
     display: flex;
     gap: 6px;
@@ -304,29 +308,124 @@
 
   @media (max-width: 640px) {
     .panel {
-      top: 12px;
+      top: 10px;
+      padding: 8px 16px;
     }
 
     .brand-title {
       font-size: 16px;
+      letter-spacing: 0.04em;
     }
 
     .stats-panel {
-      top: 62px;
-      left: 14px;
-      width: calc(100vw - 28px);
+      top: 58px;
+      left: 10px;
+      right: 10px;
+      width: auto;
+      padding: 7px 10px;
+      border-radius: 10px;
+    }
+
+    .stats-title {
+      display: none;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .stat {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .stat-value {
+      font-size: 12px;
+    }
+
+    .stat-label {
+      margin-top: 1px;
+      font-size: 9px;
     }
 
     .track-panel {
-      width: calc(100vw - 28px);
-      max-height: 48vh;
+      left: 10px;
+      right: 10px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      width: auto;
+      max-width: none;
+      height: min(58vh, 430px);
+      max-height: calc(100vh - 126px);
+      border-radius: 14px;
+      transition: transform .22s ease;
+    }
+
+    .track-panel.is-collapsed {
+      transform: translateY(calc(100% - 50px));
+    }
+
+    .track-panel-header {
+      padding: 8px 10px 10px;
+    }
+
+    .drawer-toggle {
+      display: flex;
+      width: 100%;
+      height: 34px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #2f4a32;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .drawer-summary {
+      color: rgba(47, 74, 50, 0.72);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .track-panel-title {
+      display: none;
+    }
+
+    .toolbar {
+      margin: 8px 0;
+    }
+
+    .toolbar button {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 7px 6px;
+    }
+
+    .search {
+      padding: 8px 9px;
+    }
+
+    .tree {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .track-item {
+      grid-template-columns: 18px 16px 42px minmax(0, 1fr);
+      padding-left: 8px;
     }
 
     .profile-panel {
-      left: 14px;
-      right: 14px;
+      position: static;
       width: auto;
-      bottom: calc(48vh + 88px);
+      max-width: none;
+      margin: 0 10px 10px;
+      padding: 10px;
+      box-shadow: none;
     }
 
     #elevationCanvas {
@@ -334,8 +433,16 @@
     }
 
     .opacity-panel {
-      right: 14px;
-      bottom: calc(48vh + 34px);
+      position: static;
+      margin-top: 8px;
+      padding: 7px 8px;
+      box-shadow: none;
+    }
+
+    .opacity-panel input {
+      flex: 1 1 auto;
+      min-width: 0;
+      width: auto;
     }
   }
 </style>
@@ -370,8 +477,12 @@
   </div>
 </div>
 
-<div class="track-panel">
+<div class="track-panel is-collapsed">
   <div class="track-panel-header">
+    <button class="drawer-toggle" id="drawerToggle" type="button" aria-expanded="false">
+      <span>轨迹</span>
+      <span class="drawer-summary" id="drawerSummary">0/0</span>
+    </button>
     <div class="track-panel-title">轨迹</div>
     <div class="toolbar">
       <button id="showAllBtn">全部</button>
@@ -429,6 +540,10 @@ const colors = [
 ];
 
 const trackTree = document.getElementById('trackTree');
+const trackPanel = document.querySelector('.track-panel');
+const trackPanelHeader = document.querySelector('.track-panel-header');
+const drawerToggle = document.getElementById('drawerToggle');
+const drawerSummary = document.getElementById('drawerSummary');
 const emptyBox = document.getElementById('emptyBox');
 const searchInput = document.getElementById('searchInput');
 const selectedInfo = document.getElementById('selectedInfo');
@@ -442,10 +557,36 @@ const profilePanel = document.getElementById('profilePanel');
 const profileTitle = document.getElementById('profileTitle');
 const profileMeta = document.getElementById('profileMeta');
 const elevationCanvas = document.getElementById('elevationCanvas');
+const opacityPanel = document.querySelector('.opacity-panel');
+const profileHome = document.createComment('profile-panel-home');
+const opacityHome = document.createComment('opacity-panel-home');
+profilePanel.before(profileHome);
+opacityPanel.before(opacityHome);
 
 let trackGroups = [];
 let selectedIndexes = new Set();
 let allBounds = [];
+
+function isMobileLayout() {
+  return window.matchMedia('(max-width: 640px)').matches;
+}
+
+function syncResponsivePanels() {
+  if (isMobileLayout()) {
+    trackPanelHeader.appendChild(opacityPanel);
+    trackPanel.appendChild(profilePanel);
+    return;
+  }
+
+  profileHome.after(profilePanel);
+  opacityHome.after(opacityPanel);
+  trackPanel.classList.remove('is-collapsed');
+  drawerToggle.setAttribute('aria-expanded', 'true');
+}
+
+function updateDrawerSummary() {
+  drawerSummary.textContent = `${selectedIndexes.size}/${trackGroups.length}`;
+}
 
 function yearOf(dateText) {
   return /^\d{4}-\d{2}-\d{2}/.test(dateText) ? dateText.slice(0, 4) : "未知年份";
@@ -559,6 +700,7 @@ function updateStatsPanel() {
   statsDistance.textContent = formatDistance(stats.distance);
   statsAscent.textContent = stats.hasElevation ? formatMeters(stats.ascent) : "--";
   statsLatest.textContent = stats.latest ? stats.latest.slice(5) : "--";
+  updateDrawerSummary();
 }
 
 function updateSelectedInfo() {
@@ -1044,8 +1186,16 @@ async function loadTracks() {
 document.getElementById("showAllBtn").onclick = showAll;
 document.getElementById("recentBtn").onclick = () => showRecent(10);
 document.getElementById("clearBtn").onclick = clearSelection;
+drawerToggle.onclick = () => {
+  trackPanel.classList.toggle('is-collapsed');
+  drawerToggle.setAttribute('aria-expanded', String(!trackPanel.classList.contains('is-collapsed')));
+};
 searchInput.addEventListener("input", renderTree);
-window.addEventListener('resize', updateProfile);
+window.addEventListener('resize', () => {
+  syncResponsivePanels();
+  updateProfile();
+});
+syncResponsivePanels();
 
 loadTracks().catch(err => {
   console.error(err);
