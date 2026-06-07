@@ -898,6 +898,12 @@ function showAll() {
   applySelection(trackGroups.map(g => g.index));
 }
 
+map.on('click', () => {
+  if (selectedIndexes.size === 1) {
+    showAll();
+  }
+});
+
 function showRecent(limit = 10) {
   const recent = [...trackGroups]
     .sort((a, b) => (b.properties.date || "").localeCompare(a.properties.date || ""))
