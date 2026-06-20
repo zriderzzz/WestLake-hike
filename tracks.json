@@ -193,5 +193,18 @@
     "descent": 1237.0,
     "min_elevation": 23.0,
     "max_elevation": 358.0
+  },
+  {
+    "id": 16,
+    "date": "2026-06-20",
+    "title": "Saturday Afternoon Hike",
+    "file": "tracks/2026-6-20 之江校区-三台山路.gpx",
+    "visible": true,
+    "points": 1204,
+    "distance": 6734.7,
+    "ascent": 470.0,
+    "descent": 482.0,
+    "min_elevation": 24.0,
+    "max_elevation": 240.0
   }
 ]
