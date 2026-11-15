@@ -626,8 +626,11 @@
   </div>
   <div class="explore-actions">
     <button id="locateBtn" type="button">定位我</button>
-    <button id="gridBtn" type="button" class="is-active">未走区域</button>
+    <button id="gridBtn" type="button" class="is-active">迷雾开启</button>
   </div>
+  <label style="display:block;margin-top:8px;font-size:12px">轨迹两侧各
+    <select id="fogRadius" aria-label="轨迹照亮半径"><option value="100">100 米</option><option value="200" selected>200 米</option></select>
+  </label>
   <div class="location-status" id="locationStatus">轨迹经过山峰附近后会自动点亮</div>
   <details style="margin-top:6px;font-size:11px;line-height:1.5">
     <summary>8 处坐标待核实</summary>
@@ -773,61 +776,62 @@ const BUILT_IN_PEAKS = [
   { id: 'node/6027169315', name: '如意尖', lat: 30.1182781, lng: 119.9970933 }
 ];
 const peakLayer = L.layerGroup().addTo(map);
-const gridLayer = L.layerGroup().addTo(map);
-const gridRenderer = L.canvas({ padding: 0.5 });
-const historyGridIds = new Set();
-
-function gridIdFor(latlng) {
-  const lat = Number(latlng.lat ?? latlng[0]);
-  const lng = Number(latlng.lng ?? latlng[1]);
-  if (lat < GRID_BOUNDS.south || lat >= GRID_BOUNDS.north ||
-      lng < GRID_BOUNDS.west || lng >= GRID_BOUNDS.east) return null;
-
-  const row = Math.floor((lat - GRID_BOUNDS.south) / GRID_STEP.lat);
-  const col = Math.floor((lng - GRID_BOUNDS.west) / GRID_STEP.lng);
-  return `${row}:${col}`;
-}
-
-function gridBoundsFor(id) {
-  const [row, col] = id.split(':').map(Number);
-  const south = GRID_BOUNDS.south + row * GRID_STEP.lat;
-  const west = GRID_BOUNDS.west + col * GRID_STEP.lng;
-  return [[south, west], [south + GRID_STEP.lat, west + GRID_STEP.lng]];
-}
-
-function addSegmentToExploredGrid(a, b) {
-  const distance = haversineDistance(a, b);
-  const steps = Math.max(1, Math.ceil(distance / 180));
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const id = gridIdFor([
-      a[0] + (b[0] - a[0]) * t,
-      a[1] + (b[1] - a[1]) * t
-    ]);
-    if (id) historyGridIds.add(id);
-  }
-}
-
-function renderExplorationGrid() {
-  gridLayer.clearLayers();
-  const rows = Math.ceil((GRID_BOUNDS.north - GRID_BOUNDS.south) / GRID_STEP.lat);
-  const cols = Math.ceil((GRID_BOUNDS.east - GRID_BOUNDS.west) / GRID_STEP.lng);
-
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const id = `${row}:${col}`;
-      const explored = historyGridIds.has(id);
-      L.rectangle(gridBoundsFor(id), {
-        renderer: gridRenderer,
-        interactive: false,
-        weight: explored ? 0.8 : 0.45,
-        color: explored ? '#4f825c' : '#727a75',
-        fillColor: explored ? '#7cad80' : '#c6cbc7',
-        fillOpacity: explored ? 0.14 : 0.055,
-        opacity: explored ? 0.38 : 0.20
-      }).addTo(gridLayer);
+let fogRadius = 200;
+const FogLayer = L.Layer.extend({
+  onAdd(mapInstance) {
+    this._map = mapInstance;
+    this._canvas = L.DomUtil.create('canvas', 'history-fog');
+    this._canvas.style.pointerEvents = 'none';
+    this._canvas.style.position = 'absolute';
+    mapInstance.getPane('fogPane').appendChild(this._canvas);
+    mapInstance.on('moveend zoomend resize', this.redraw, this);
+    this.redraw();
+  },
+  onRemove(mapInstance) {
+    mapInstance.off('moveend zoomend resize', this.redraw, this);
+    this._canvas.remove();
+  },
+  redraw() {
+    if (!this._map || !this._canvas) return;
+    const size = this._map.getSize();
+    const dpr = window.devicePixelRatio || 1;
+    const canvas = this._canvas;
+    canvas.width = Math.round(size.x * dpr);
+    canvas.height = Math.round(size.y * dpr);
+    canvas.style.width = size.x + 'px';
+    canvas.style.height = size.y + 'px';
+    L.DomUtil.setPosition(canvas, this._map.containerPointToLayerPoint([0, 0]));
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = 'rgba(24, 37, 34, 0.70)';
+    ctx.fillRect(0, 0, size.x, size.y);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = '#000';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const [a, b] of trackSegments) {
+      const pa = this._map.latLngToContainerPoint(a);
+      const pb = this._map.latLngToContainerPoint(b);
+      const lat = (a[0] + b[0]) / 2;
+      const metersPerPixel = 40075016.686 * Math.cos(lat * Math.PI / 180) / (256 * Math.pow(2, this._map.getZoom()));
+      const radius = fogRadius / metersPerPixel;
+      if (Math.max(pa.x, pb.x) < -radius || Math.min(pa.x, pb.x) > size.x + radius ||
+          Math.max(pa.y, pb.y) < -radius || Math.min(pa.y, pb.y) > size.y + radius) continue;
+      ctx.lineWidth = radius * 2;
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
     }
+    ctx.globalCompositeOperation = 'source-over';
   }
+});
+map.createPane('fogPane');
+map.getPane('fogPane').style.zIndex = 450;
+map.getPane('fogPane').style.pointerEvents = 'none';
+const gridLayer = new FogLayer().addTo(map);
+function renderExplorationGrid() {
+  if (map.hasLayer(gridLayer)) gridLayer.redraw();
 }
 
 function pointToSegmentDistance(point, a, b) {
@@ -1492,7 +1496,6 @@ async function loadTracks() {
 
       for (let j = 1; j < latlngs.length; j++) {
         trackSegments.push([latlngs[j - 1], latlngs[j]]);
-        addSegmentToExploredGrid(latlngs[j - 1], latlngs[j]);
       }
 
       const featureDistance = finiteNumber(feature.properties?.distance);
@@ -1625,11 +1628,20 @@ gridBtn.onclick = () => {
   if (map.hasLayer(gridLayer)) {
     map.removeLayer(gridLayer);
     gridBtn.classList.remove('is-active');
+    gridBtn.textContent = '迷雾关闭';
   } else {
     gridLayer.addTo(map);
     gridBtn.classList.add('is-active');
+    gridBtn.textContent = '迷雾开启';
   }
 };
+document.getElementById('fogRadius').onchange = event => {
+  fogRadius = Number(event.target.value);
+  renderExplorationGrid();
+};
+baseOpacity.value = '100';
+baseOpacityValue.textContent = '100%';
+baseLayer.setOpacity(1);
 drawerToggle.onclick = () => {
   trackPanel.classList.toggle('is-collapsed');
   drawerToggle.setAttribute('aria-expanded', String(!trackPanel.classList.contains('is-collapsed')));
