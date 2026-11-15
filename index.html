@@ -626,7 +626,7 @@
   </div>
   <div class="explore-actions">
     <button id="locateBtn" type="button">定位我</button>
-    <button id="gridBtn" type="button" class="is-active">迷雾开启</button>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input id="gridBtn" type="checkbox" checked style="accent-color:#2f6849">世界迷雾</label>
   </div>
   <label style="display:block;margin-top:8px;font-size:12px">轨迹两侧各
     <select id="fogRadius" aria-label="轨迹照亮半径"><option value="100">100 米</option><option value="200" selected>200 米</option></select>
@@ -690,8 +690,9 @@ baseOpacityValue.textContent = `${baseOpacity.value}%`;
 
 baseOpacity.addEventListener('input', () => {
   const value = Number(baseOpacity.value) / 100;
-  baseLayer.setOpacity(value);
+  baseLayer.setOpacity(1);
   baseOpacityValue.textContent = `${baseOpacity.value}%`;
+  renderExplorationGrid();
 });
 
 const colors = [
@@ -803,7 +804,8 @@ const FogLayer = L.Layer.extend({
     L.DomUtil.setPosition(canvas, this._map.containerPointToLayerPoint([0, 0]));
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = 'rgba(24, 37, 34, 0.70)';
+    const fogOpacity = 1 - Number(baseOpacity.value) / 100;
+    ctx.fillStyle = `rgba(24, 37, 34, ${fogOpacity})`;
     ctx.fillRect(0, 0, size.x, size.y);
     ctx.globalCompositeOperation = 'destination-out';
     ctx.strokeStyle = '#000';
@@ -1624,15 +1626,11 @@ document.getElementById("showAllBtn").onclick = showAll;
 document.getElementById("recentBtn").onclick = () => showRecent(10);
 document.getElementById("clearBtn").onclick = clearSelection;
 locateBtn.onclick = () => locationWatchId === null ? startLiveLocation() : stopLiveLocation();
-gridBtn.onclick = () => {
-  if (map.hasLayer(gridLayer)) {
+gridBtn.onchange = () => {
+  if (!gridBtn.checked) {
     map.removeLayer(gridLayer);
-    gridBtn.classList.remove('is-active');
-    gridBtn.textContent = '迷雾关闭';
   } else {
     gridLayer.addTo(map);
-    gridBtn.classList.add('is-active');
-    gridBtn.textContent = '迷雾开启';
   }
 };
 document.getElementById('fogRadius').onchange = event => {
