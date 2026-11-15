@@ -41,7 +41,7 @@
   {
     "id": 4,
     "date": "2026-02-08",
-    "title": "Sunday Afternoon Walk",
+    "title": "宝石山 银泰",
     "file": "tracks/2026-02-08 宝石山-银泰.gpx",
     "visible": true,
     "points": 1485,
@@ -197,7 +197,7 @@
   {
     "id": 16,
     "date": "2026-10-25",
-    "title": "Sunday Afternoon Hike",
+    "title": "宝石山",
     "file": "tracks/2026-10-25 宝石山.gpx",
     "visible": true,
     "points": 1222,
@@ -209,8 +209,8 @@
   },
   {
     "id": 17,
-    "date": "",
-    "title": "Saturday Afternoon Hike",
+    "date": "2026-06-20",
+    "title": "之江校区 三台山路",
     "file": "tracks/2026-6-20 之江校区-三台山路.gpx",
     "visible": true,
     "points": 1204,
