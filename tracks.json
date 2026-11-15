@@ -209,6 +209,19 @@
   },
   {
     "id": 17,
+    "date": "2026-11-15",
+    "title": "龙门山",
+    "file": "tracks/2026-11-15 龙门山.gpx",
+    "visible": true,
+    "points": 817,
+    "distance": 4531.3,
+    "ascent": 310.0,
+    "descent": 311.0,
+    "min_elevation": 72.0,
+    "max_elevation": 353.0
+  },
+  {
+    "id": 18,
     "date": "2026-06-20",
     "title": "之江校区 三台山路",
     "file": "tracks/2026-6-20 之江校区-三台山路.gpx",
