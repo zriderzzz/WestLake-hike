@@ -196,7 +196,20 @@
   },
   {
     "id": 16,
-    "date": "2026-06-20",
+    "date": "2026-10-25",
+    "title": "Sunday Afternoon Hike",
+    "file": "tracks/2026-10-25 宝石山.gpx",
+    "visible": true,
+    "points": 1222,
+    "distance": 6906.2,
+    "ascent": 289.0,
+    "descent": 285.0,
+    "min_elevation": 16.0,
+    "max_elevation": 121.0
+  },
+  {
+    "id": 17,
+    "date": "",
     "title": "Saturday Afternoon Hike",
     "file": "tracks/2026-6-20 之江校区-三台山路.gpx",
     "visible": true,
