@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import json
 import math
 import re
+from datetime import date as calendar_date
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,7 +25,7 @@ def q(ns, tag):
 
 def clean_title(path: Path, index: int):
     stem = unquote(path.stem)
-    stem = re.sub(r"^\d{4}-\d{2}-\d{2}[-_ ]*", "", stem)
+    stem = re.sub(r"^\d{4}-\d{1,2}-\d{1,2}[-_ ]*", "", stem)
     stem = re.sub(r"[-_]+", " ", stem).strip()
     return stem or f"西湖群山徒步 {index:02d}"
 
@@ -34,8 +35,13 @@ def clean_name(text):
 
 
 def date_from_filename(path: Path):
-    m = re.search(r"(\d{4}-\d{2}-\d{2})", path.name)
-    return m.group(1) if m else ""
+    m = re.search(r"(?<!\d)(\d{4})-(\d{1,2})-(\d{1,2})(?!\d)", unquote(path.name))
+    if not m:
+        return ""
+    try:
+        return calendar_date(*map(int, m.groups())).isoformat()
+    except ValueError:
+        return ""
 
 
 def first_time(root, ns):
@@ -102,6 +108,9 @@ def main():
         raise SystemExit("tracks/ directory not found")
 
     gpx_files = sorted(TRACKS_DIR.glob("*.gpx"), key=lambda p: p.name)
+    previous_dates = {}
+    if JSON_PATH.exists():
+        previous_dates = {item["file"]: item.get("date", "") for item in json.loads(JSON_PATH.read_text(encoding="utf-8"))}
     features = []
     manifest = []
 
@@ -113,7 +122,7 @@ def main():
         date = date_from_filename(path)
         if not date:
             t = first_time(root, ns)
-            date = t[:10] if t else ""
+            date = t[:10] if t else previous_dates.get(f"tracks/{path.name}", "")
 
         trk_name = ""
         first_trk = root.find(q(ns, "trk"))
@@ -122,6 +131,8 @@ def main():
             if name_el is not None and name_el.text:
                 trk_name = clean_name(name_el.text)
         title = trk_name or clean_title(path, idx)
+        if re.fullmatch(r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) (?:Morning|Afternoon|Evening|Night) (?:Hike|Walk|Run)", trk_name, re.IGNORECASE) and date_from_filename(path):
+            title = clean_title(path, idx)
 
         track_stats = {
             "points": 0,
