@@ -629,6 +629,10 @@
     <button id="gridBtn" type="button" class="is-active">未走区域</button>
   </div>
   <div class="location-status" id="locationStatus">轨迹经过山峰附近后会自动点亮</div>
+  <details style="margin-top:6px;font-size:11px;line-height:1.5">
+    <summary>8 处坐标待核实</summary>
+    美女山、白云峰、马儿山、理安山、八觉山、屏风山、城隍山、孔家山。暂不标点、不计入点亮总数。
+  </details>
 </div>
 
 <div class="track-panel is-collapsed">
@@ -734,7 +738,7 @@ let hasCenteredOnLocation = false;
 
 const PEAK_VISIT_RADIUS = 180;
 const LOCATION_VISIT_RADIUS = 120;
-const GRID_BOUNDS = { south: 30.15, west: 120.00, north: 30.35, east: 120.20 };
+const GRID_BOUNDS = { south: 30.10, west: 119.98, north: 30.35, east: 120.20 };
 const GRID_STEP = { lat: 0.009, lng: 0.010 };
 const BUILT_IN_PEAKS = [
   { id: 'node/2763362675', name: '北高峰', lat: 30.2479298, lng: 120.0920867 },
@@ -755,7 +759,18 @@ const BUILT_IN_PEAKS = [
   { id: 'node/4943761652', name: '美人峰', lat: 30.2445676, lng: 120.0876553 },
   { id: 'node/9029237491', name: '五老峰', lat: 30.2314361, lng: 120.1205818 },
   { id: 'node/6021185475', name: '秦亭山', lat: 30.2687924, lng: 120.1122314 },
-  { id: 'node/6021185473', name: '桃源岭', lat: 30.2563697, lng: 120.1045721 }
+  { id: 'node/6021185473', name: '桃源岭', lat: 30.2563697, lng: 120.1045721 },
+  { id: 'node/13984744141', name: '瑞云山', lat: 30.2535595, lng: 120.1029484 },
+  { id: 'node/13984744140', name: '状元峰', lat: 30.2606195, lng: 120.1026969 },
+  { id: 'node/5580634137', name: '锅子顶', lat: 30.2535446, lng: 120.1002083 },
+  { id: 'node/28784701', name: '石人岭', lat: 30.2333777, lng: 120.0811256 },
+  { id: 'node/770694138', name: '贵人峰（贵人阁参考点）', lat: 30.2134007, lng: 120.1209723 },
+  { id: 'node/5580634121', name: '马鞍山', lat: 30.2064185, lng: 120.1162011 },
+  { id: 'node/4944256638', name: '云居山', lat: 30.2347470, lng: 120.1575257 },
+  { id: 'node/4944269341', name: '九华山', lat: 30.2270331, lng: 120.1553161 },
+  { id: 'node/5597718005', name: '午潮山', lat: 30.1977381, lng: 120.0060980 },
+  { id: 'node/5597718008', name: '小和山', lat: 30.2034422, lng: 120.0239056 },
+  { id: 'node/6027169315', name: '如意尖', lat: 30.1182781, lng: 119.9970933 }
 ];
 const peakLayer = L.layerGroup().addTo(map);
 const gridLayer = L.layerGroup().addTo(map);
