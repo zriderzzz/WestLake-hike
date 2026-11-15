@@ -33,7 +33,7 @@
     color: #2f4a32;
   }
 
-  .stats-panel, .track-panel, .profile-panel, .opacity-panel {
+  .stats-panel, .explore-panel, .track-panel, .profile-panel, .opacity-panel {
     position: absolute;
     z-index: 1000;
     background: rgba(255,255,255,.94);
@@ -85,6 +85,126 @@
     margin-top: 4px;
     font-size: 11px;
     color: rgba(47, 74, 50, 0.70);
+  }
+
+  .explore-panel {
+    top: 174px;
+    right: 14px;
+    width: 278px;
+    padding: 12px;
+    box-sizing: border-box;
+    color: #2f4a32;
+  }
+
+  .explore-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .explore-title {
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .explore-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: #39704b;
+  }
+
+  .explore-progress {
+    height: 6px;
+    margin: 9px 0 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5e9e1;
+  }
+
+  .explore-progress-bar {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #5d8d62, #2d6848);
+    transition: width .25s ease;
+  }
+
+  .explore-legend {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 9px;
+    font-size: 11px;
+    color: rgba(47, 74, 50, .72);
+  }
+
+  .legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    border-radius: 50%;
+    vertical-align: 0;
+  }
+
+  .legend-dot.visited { background: #2f7b51; }
+  .legend-dot.unvisited { border: 1.5px solid #7a8078; box-sizing: border-box; }
+
+  .explore-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .explore-actions button {
+    border: 1px solid rgba(47, 74, 50, .18);
+    border-radius: 9px;
+    padding: 7px 8px;
+    background: #f7f9f4;
+    color: #2f4a32;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .explore-actions button:hover { background: #eef3ea; }
+  .explore-actions button.is-active { background: #2f6849; color: #fff; }
+
+  .location-status {
+    min-height: 16px;
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgba(47, 74, 50, .76);
+  }
+
+  .peak-marker {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border: 2px solid #777e77;
+    border-radius: 50% 50% 50% 0;
+    box-sizing: border-box;
+    background: rgba(255,255,255,.94);
+    color: #727872;
+    font-size: 10px;
+    font-weight: 800;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+
+  .peak-marker span { transform: rotate(45deg); }
+  .peak-marker.visited { border-color: #276947; background: #2f7b51; color: #fff; }
+
+  .you-are-here {
+    width: 16px;
+    height: 16px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: #3478f6;
+    box-shadow: 0 0 0 2px #3478f6, 0 2px 8px rgba(0,0,0,.28);
   }
 
   .track-panel {
@@ -304,6 +424,8 @@
       right: auto;
       width: 292px;
     }
+
+    .explore-panel { top: 226px; }
   }
 
   @media (max-width: 640px) {
@@ -325,6 +447,19 @@
       padding: 7px 10px;
       border-radius: 10px;
     }
+
+    .explore-panel {
+      top: 112px;
+      right: 10px;
+      width: 208px;
+      padding: 9px 10px;
+      border-radius: 11px;
+    }
+
+    .explore-progress { margin: 6px 0; }
+    .explore-legend { display: none; }
+    .explore-actions button { padding: 6px 5px; }
+    .location-status { margin-top: 6px; }
 
     .stats-title {
       display: none;
@@ -477,6 +612,25 @@
   </div>
 </div>
 
+<div class="explore-panel">
+  <div class="explore-heading">
+    <div class="explore-title">西湖群山点亮</div>
+    <div class="explore-count" id="peakCount">载入中…</div>
+  </div>
+  <div class="explore-progress" aria-hidden="true">
+    <div class="explore-progress-bar" id="peakProgress"></div>
+  </div>
+  <div class="explore-legend">
+    <span><i class="legend-dot visited"></i>已到访</span>
+    <span><i class="legend-dot unvisited"></i>未到访</span>
+  </div>
+  <div class="explore-actions">
+    <button id="locateBtn" type="button">定位我</button>
+    <button id="gridBtn" type="button" class="is-active">未走区域</button>
+  </div>
+  <div class="location-status" id="locationStatus">轨迹经过山峰附近后会自动点亮</div>
+</div>
+
 <div class="track-panel is-collapsed">
   <div class="track-panel-header">
     <button class="drawer-toggle" id="drawerToggle" type="button" aria-expanded="false">
@@ -558,6 +712,11 @@ const profileTitle = document.getElementById('profileTitle');
 const profileMeta = document.getElementById('profileMeta');
 const elevationCanvas = document.getElementById('elevationCanvas');
 const opacityPanel = document.querySelector('.opacity-panel');
+const peakCount = document.getElementById('peakCount');
+const peakProgress = document.getElementById('peakProgress');
+const locateBtn = document.getElementById('locateBtn');
+const gridBtn = document.getElementById('gridBtn');
+const locationStatus = document.getElementById('locationStatus');
 const profileHome = document.createComment('profile-panel-home');
 const opacityHome = document.createComment('opacity-panel-home');
 profilePanel.before(profileHome);
@@ -566,6 +725,251 @@ opacityPanel.before(opacityHome);
 let trackGroups = [];
 let selectedIndexes = new Set();
 let allBounds = [];
+let trackSegments = [];
+let peaks = [];
+let locationWatchId = null;
+let locationMarker = null;
+let accuracyCircle = null;
+let hasCenteredOnLocation = false;
+
+const PEAK_VISIT_RADIUS = 180;
+const LOCATION_VISIT_RADIUS = 120;
+const GRID_BOUNDS = { south: 30.15, west: 120.00, north: 30.35, east: 120.20 };
+const GRID_STEP = { lat: 0.009, lng: 0.010 };
+const BUILT_IN_PEAKS = [
+  { id: 'node/2763362675', name: '北高峰', lat: 30.2479298, lng: 120.0920867 },
+  { id: 'node/5162287122', name: '南高峰', lat: 30.2240207, lng: 120.1175872 },
+  { id: 'node/4943773762', name: '玉皇山', lat: 30.2170488, lng: 120.1401096 },
+  { id: 'node/4944239421', name: '凤凰山', lat: 30.2238036, lng: 120.1546560 },
+  { id: 'node/4944239422', name: '将台山', lat: 30.2185245, lng: 120.1505742 },
+  { id: 'node/756935539', name: '五云山', lat: 30.1983844, lng: 120.0952294 },
+  { id: 'node/5580634142', name: '宝石山', lat: 30.2624214, lng: 120.1414080 },
+  { id: 'node/9025915392', name: '丁家山', lat: 30.2415894, lng: 120.1287329 },
+  { id: 'node/5027557773', name: '九曜山', lat: 30.2216970, lng: 120.1363021 },
+  { id: 'node/4943673067', name: '虎跑山', lat: 30.2098872, lng: 120.1268163 },
+  { id: 'node/5580633518', name: '大慈山', lat: 30.2109222, lng: 120.1326046 },
+  { id: 'node/5580634140', name: '老和山', lat: 30.2708673, lng: 120.1141044 },
+  { id: 'node/9020762381', name: '飞来峰', lat: 30.2388764, lng: 120.0964157 },
+  { id: 'node/5580634127', name: '天竺山', lat: 30.2214212, lng: 120.0875784 },
+  { id: 'node/5580634128', name: '狮峰', lat: 30.2158137, lng: 120.0925096 },
+  { id: 'node/4943761652', name: '美人峰', lat: 30.2445676, lng: 120.0876553 },
+  { id: 'node/9029237491', name: '五老峰', lat: 30.2314361, lng: 120.1205818 },
+  { id: 'node/6021185475', name: '秦亭山', lat: 30.2687924, lng: 120.1122314 },
+  { id: 'node/6021185473', name: '桃源岭', lat: 30.2563697, lng: 120.1045721 }
+];
+const peakLayer = L.layerGroup().addTo(map);
+const gridLayer = L.layerGroup().addTo(map);
+const gridRenderer = L.canvas({ padding: 0.5 });
+const historyGridIds = new Set();
+
+function gridIdFor(latlng) {
+  const lat = Number(latlng.lat ?? latlng[0]);
+  const lng = Number(latlng.lng ?? latlng[1]);
+  if (lat < GRID_BOUNDS.south || lat >= GRID_BOUNDS.north ||
+      lng < GRID_BOUNDS.west || lng >= GRID_BOUNDS.east) return null;
+
+  const row = Math.floor((lat - GRID_BOUNDS.south) / GRID_STEP.lat);
+  const col = Math.floor((lng - GRID_BOUNDS.west) / GRID_STEP.lng);
+  return `${row}:${col}`;
+}
+
+function gridBoundsFor(id) {
+  const [row, col] = id.split(':').map(Number);
+  const south = GRID_BOUNDS.south + row * GRID_STEP.lat;
+  const west = GRID_BOUNDS.west + col * GRID_STEP.lng;
+  return [[south, west], [south + GRID_STEP.lat, west + GRID_STEP.lng]];
+}
+
+function addSegmentToExploredGrid(a, b) {
+  const distance = haversineDistance(a, b);
+  const steps = Math.max(1, Math.ceil(distance / 180));
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const id = gridIdFor([
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t
+    ]);
+    if (id) historyGridIds.add(id);
+  }
+}
+
+function renderExplorationGrid() {
+  gridLayer.clearLayers();
+  const rows = Math.ceil((GRID_BOUNDS.north - GRID_BOUNDS.south) / GRID_STEP.lat);
+  const cols = Math.ceil((GRID_BOUNDS.east - GRID_BOUNDS.west) / GRID_STEP.lng);
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const id = `${row}:${col}`;
+      const explored = historyGridIds.has(id);
+      L.rectangle(gridBoundsFor(id), {
+        renderer: gridRenderer,
+        interactive: false,
+        weight: explored ? 0.8 : 0.45,
+        color: explored ? '#4f825c' : '#727a75',
+        fillColor: explored ? '#7cad80' : '#c6cbc7',
+        fillOpacity: explored ? 0.14 : 0.055,
+        opacity: explored ? 0.38 : 0.20
+      }).addTo(gridLayer);
+    }
+  }
+}
+
+function pointToSegmentDistance(point, a, b) {
+  const lat0 = point[0] * Math.PI / 180;
+  const scaleX = 111320 * Math.cos(lat0);
+  const scaleY = 110540;
+  const ax = (a[1] - point[1]) * scaleX;
+  const ay = (a[0] - point[0]) * scaleY;
+  const bx = (b[1] - point[1]) * scaleX;
+  const by = (b[0] - point[0]) * scaleY;
+  const dx = bx - ax;
+  const dy = by - ay;
+  const lengthSq = dx * dx + dy * dy;
+  const t = lengthSq ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / lengthSq)) : 0;
+  return Math.hypot(ax + dx * t, ay + dy * t);
+}
+
+function distanceToTrack(lat, lng) {
+  let nearest = Infinity;
+  for (const [a, b] of trackSegments) {
+    nearest = Math.min(nearest, pointToSegmentDistance([lat, lng], a, b));
+    if (nearest <= PEAK_VISIT_RADIUS) break;
+  }
+  return nearest;
+}
+
+function isPeakVisited(peak) {
+  return peak.trackDistance <= PEAK_VISIT_RADIUS;
+}
+
+function peakIcon(visited) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="peak-marker ${visited ? 'visited' : ''}"><span>${visited ? '✓' : '△'}</span></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+    popupAnchor: [0, -20]
+  });
+}
+
+function renderPeaks() {
+  peakLayer.clearLayers();
+  let visitedCount = 0;
+
+  peaks.forEach(peak => {
+    const visited = isPeakVisited(peak);
+    if (visited) visitedCount += 1;
+    const elevation = peak.elevation ? `${peak.elevation} m` : '海拔未知';
+    const trackDistance = Number.isFinite(peak.trackDistance)
+      ? `距历史轨迹最近 ${formatDistance(peak.trackDistance)}`
+      : '暂无历史轨迹';
+    const marker = L.marker([peak.lat, peak.lng], { icon: peakIcon(visited), zIndexOffset: visited ? 300 : 200 });
+    marker.bindTooltip(escapeHtml(peak.name), { direction: 'top', offset: [0, -18] });
+    marker.bindPopup(`<b>${escapeHtml(peak.name)}</b><br>${visited ? '已点亮' : '尚未到访'} · ${elevation}<br>${trackDistance}`);
+    marker.addTo(peakLayer);
+  });
+
+  peakCount.textContent = peaks.length ? `${visitedCount}/${peaks.length}` : '0/0';
+  peakProgress.style.width = peaks.length ? `${visitedCount / peaks.length * 100}%` : '0%';
+}
+
+async function loadPeaks() {
+  try {
+    peaks = BUILT_IN_PEAKS.map(element => {
+      const lat = Number(element.lat);
+      const lng = Number(element.lng);
+      return {
+        id: element.id,
+        lat,
+        lng,
+        name: element.name,
+        elevation: null,
+        trackDistance: distanceToTrack(lat, lng)
+      };
+    }).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+
+    renderPeaks();
+    locationStatus.textContent = '绿色山峰已点亮，灰色山峰等你去走';
+  } catch (err) {
+    peakCount.textContent = '暂不可用';
+    locationStatus.textContent = '山峰数据暂时无法载入，轨迹和实时定位仍可使用';
+  }
+}
+
+function nearestPeakTo(lat, lng) {
+  let nearest = null;
+  peaks.forEach(peak => {
+    const distance = haversineDistance([lat, lng], [peak.lat, peak.lng]);
+    if (!nearest || distance < nearest.distance) nearest = { peak, distance };
+  });
+  return nearest;
+}
+
+function updateLiveLocation(position) {
+  const { latitude, longitude, accuracy } = position.coords;
+  const latlng = [latitude, longitude];
+  const locationIcon = L.divIcon({ className: '', html: '<div class="you-are-here"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+
+  if (!locationMarker) {
+    locationMarker = L.marker(latlng, { icon: locationIcon, zIndexOffset: 1000 }).addTo(map);
+    accuracyCircle = L.circle(latlng, { radius: accuracy, weight: 1, color: '#3478f6', fillOpacity: .08 }).addTo(map);
+  } else {
+    locationMarker.setLatLng(latlng);
+    accuracyCircle.setLatLng(latlng).setRadius(accuracy);
+  }
+
+  const trackDistance = distanceToTrack(latitude, longitude);
+  const areaVisited = trackDistance <= LOCATION_VISIT_RADIUS;
+  const areaText = Number.isFinite(trackDistance)
+    ? `${areaVisited ? '这里走过' : '这里没走过'} · ${areaVisited ? '距历史轨迹' : '离最近轨迹'} ${formatDistance(trackDistance)}`
+    : '暂无历史轨迹可供对照';
+  const nearest = nearestPeakTo(latitude, longitude);
+  if (nearest) {
+    const peakText = isPeakVisited(nearest.peak) ? '已点亮' : '未点亮';
+    locationStatus.textContent = `${areaText} · ${nearest.peak.name} ${formatDistance(nearest.distance)}（${peakText}）· 精度 ±${Math.round(accuracy)} m`;
+  } else {
+    locationStatus.textContent = `${areaText} · 精度 ±${Math.round(accuracy)} m`;
+  }
+
+  if (!hasCenteredOnLocation) {
+    map.setView(latlng, Math.max(map.getZoom(), 15));
+    hasCenteredOnLocation = true;
+  }
+}
+
+function handleLocationError(error) {
+  const messages = {
+    1: '没有定位权限，请在浏览器设置中允许位置访问',
+    2: '暂时无法获取位置，请到开阔处重试',
+    3: '定位超时，请再试一次'
+  };
+  locationStatus.textContent = messages[error.code] || '实时定位失败';
+  stopLiveLocation(false);
+}
+
+function startLiveLocation() {
+  if (!navigator.geolocation) {
+    locationStatus.textContent = '当前浏览器不支持实时定位';
+    return;
+  }
+  locationStatus.textContent = '正在获取实时位置…';
+  locateBtn.textContent = '停止定位';
+  locateBtn.classList.add('is-active');
+  locationWatchId = navigator.geolocation.watchPosition(updateLiveLocation, handleLocationError, {
+    enableHighAccuracy: true,
+    maximumAge: 5000,
+    timeout: 15000
+  });
+}
+
+function stopLiveLocation(updateText = true) {
+  if (locationWatchId !== null) navigator.geolocation.clearWatch(locationWatchId);
+  locationWatchId = null;
+  locateBtn.textContent = '定位我';
+  locateBtn.classList.remove('is-active');
+  if (updateText) locationStatus.textContent = '实时定位已暂停；点亮状态只由导入的轨迹决定';
+}
 
 function isMobileLayout() {
   return window.matchMedia('(max-width: 640px)').matches;
@@ -1021,7 +1425,9 @@ function renderTree() {
 }
 
 async function loadTracks() {
-  const res = await fetch('tracks.geojson?ts=' + Date.now());
+  let res = await fetch('tracks.geojson?ts=' + Date.now());
+  if (!res.ok) res = await fetch('preview/tracks.geojson?ts=' + Date.now());
+  if (!res.ok) throw new Error('tracks.geojson unavailable');
   const geo = await res.json();
 
   const byTrack = new Map();
@@ -1068,6 +1474,11 @@ async function loadTracks() {
       const coords = feature.geometry.coordinates || [];
       const latlngs = coords.map(c => [c[1], c[0]]);
       totalPoints += latlngs.length;
+
+      for (let j = 1; j < latlngs.length; j++) {
+        trackSegments.push([latlngs[j - 1], latlngs[j]]);
+        addSegmentToExploredGrid(latlngs[j - 1], latlngs[j]);
+      }
 
       const featureDistance = finiteNumber(feature.properties?.distance);
       totalDistance += featureDistance || 0;
@@ -1181,6 +1592,8 @@ async function loadTracks() {
   renderTree();
   syncVisibleTracks();
   updatePanels();
+  renderExplorationGrid();
+  await loadPeaks();
 
   if (allBounds.length) {
     map.fitBounds(allBounds, { padding: [25, 25] });
@@ -1192,6 +1605,16 @@ async function loadTracks() {
 document.getElementById("showAllBtn").onclick = showAll;
 document.getElementById("recentBtn").onclick = () => showRecent(10);
 document.getElementById("clearBtn").onclick = clearSelection;
+locateBtn.onclick = () => locationWatchId === null ? startLiveLocation() : stopLiveLocation();
+gridBtn.onclick = () => {
+  if (map.hasLayer(gridLayer)) {
+    map.removeLayer(gridLayer);
+    gridBtn.classList.remove('is-active');
+  } else {
+    gridLayer.addTo(map);
+    gridBtn.classList.add('is-active');
+  }
+};
 drawerToggle.onclick = () => {
   trackPanel.classList.toggle('is-collapsed');
   drawerToggle.setAttribute('aria-expanded', String(!trackPanel.classList.contains('is-collapsed')));
